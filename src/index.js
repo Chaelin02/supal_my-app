@@ -2,18 +2,39 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import './index.css'
 class Square extends React.Component {
+  constructor(props){
+    super(props)
+    this.state={
+      value:null,
+    };
+  }
   render() {
     return (
-      <button className="square">
-        {this.props.value}    
+      <button className="square" 
+      onClick={()=>this.props.onClick()}>
+      {this.props.value}
       </button>
     );
   }
 }
 
 class Board extends React.Component {
+  constructor(props){
+    super(props)
+    this.state={
+      squares:Array(9).fill(null),
+    }
+  }
   renderSquare(i) {
-    return <Square value={i}/>;  //{} 값을 태그로 넣은거임 클래스태그에 전달하는 방법
+    return <Square value={
+            this.state.squares[i]} 
+            onClick={()=>this.handleClick(i)}
+    />;
+  }
+  handleClick(i) {
+    const squares = this.squares.slice();    //원본 squares 보존하자
+    squares[i] = 'X';
+    this.setState({squares: squares})
   }
 
   render() {
