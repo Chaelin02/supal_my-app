@@ -1,13 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom';
 import './index.css'
+
+
 class Square extends React.Component {
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     value: null,
-  //   };
-  // }
   render() {
     return (
       <button className="square"
@@ -27,26 +23,25 @@ class Board extends React.Component {
   //   };
   // }
   renderSquare(i) {
-    return <Square value={
-      this.props.squares[i]}
-      onClick={() => this.props.onClick(i)} 
-    />;
+    return (
+    <Square
+      value={this.props.squares[i]}
+      onClick={() => this.props.onClick(i)} />
+    );
   }
   
-
   render() {
     // const winner = calculateWinner(this.state.squares);
     // let status;
-    // if (winner){
-    //   status = 'Winner: ' +winner;
-    // }else {
-    //   status='Next player: '+(this.state.xIsNext ? 'X' : 'O');
+    // if (winner) {
+    //   status = 'Winner: ' + winner;
+    // } else {
+    //   status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     // }
-  //const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    // const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
       <div>
-       
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -68,72 +63,69 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
-      history: [{squares:Array(9).fill(null),}],
+    this.state = {
+      history: [  {  squares: Array(9).fill(null),  }  ]
       stepNumber: 0,
-      xIsNext:true,
+      xIsNext: true,
     };
   }
   handleClick(i) {
-    const history = this.state.history.slice(0,this.state.stepNumber+1);
-    const current= this.state.history[history.length-1];
-
- //   if (this.state.squares[i] == null) {
-      const squares = current.squares.slice();  //원본 squares
-      if(calculateWinner(squares) || squares[i] != null){
-        return;
+    const history = this.state.history.slice(0, this.state.stepNumber+1);
+    const current = this.state.history[history.length-1];
+    // if (this.state.squares[i] == null) {
+      const squares = current.squares.slice(); //원본 squares 보존하자
+      if(calculateWinner(squares) || squares[i]) {   //Winner나왔거나 박스다 찼을 때 넘김
+        return; 
       }
       squares[i] = this.state.xIsNext ? 'X' : 'O';
       this.setState({
-        history : history.concat([{squares:squares, }]),
+        history: history.concat(  [  {squares: squares,}  ]  ),
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext,
       });
-    }
-//  }
-jumpTo(step){
-  this.setState({
-    stepNumber: step,
-    xIsNext: (step%2)===0,
-  });
-}
-
-render() {
+    // }
+  }
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step%2)===0,
+    });
+  }
+  render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step,move)=>{
-      const desc = move ?'Go to move #'+ move :'Go to game start'
+    const moves = history.map((step, move) => {
+      const desc = move?'Go to move #'+move :'Go to game start';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button onClick={() => this.jumpTo(move)}>{move == this.state.stepNumber ? <b>{desc}</b> : desc}</button>
         </li>
       );
     });
 
-
     let status;
-    if(winner){
-      status = 'Winner: '+winner;
-    }else{
-      status = 'Next player: '+(this.state.xIsNext?'X':'O');
+    if (winner) {
+      status = 'Winner: ' + winner;
+    }else if(!current.squares.includes(null)) {
+      status = "무승부!";
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext?'X':'O');
     }
 
-
     return (
-
       <div className="game">
         <div className="game-board">
           <Board 
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
-             />
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{status}</div>
           <ol>{moves}</ol>
         </div>
       </div>
